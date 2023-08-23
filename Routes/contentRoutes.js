@@ -12,7 +12,7 @@ const PAGE_SIZE = 10;
 
 contentRouter.get(
   "/",
-  //   isAuth,
+    isAuth,
   expressAsyncHandler(async (req, res) => {
     const content = await Content.find();
     res.send(content);
@@ -21,7 +21,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/id/:id",
-  //   isAuth,
+    isAuth,
   expressAsyncHandler(async (req, res) => {
     //! no need to try catch thanks for express async handler
     const { id } = req.params;
@@ -35,7 +35,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/search",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     console.log("search end point");
     const { query } = req;
@@ -66,8 +66,9 @@ contentRouter.get(
 
 contentRouter.get(
   "/random",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
+    console.log(req.headers);
     const content = await Content.aggregate([{ $sample: { size: 1 } }]);
     return res.status(200).send(content[0]);
   })
@@ -75,7 +76,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/featured",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const featuredContent = await FeaturedContent.find().populate('contentList').exec();
     return res.status(200).send(featuredContent);

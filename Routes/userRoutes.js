@@ -7,14 +7,18 @@ import { generateToken , isAuth } from "../utils.js";
 export const userRouter = express.Router();
 
 userRouter.post("/signin", expressAsyncHandler(async (req, res) => {
-    const user = identifier.includes("@")
-      ? await User.findOne({ email: identifier })
-      : await User.findOne({ username: identifier });
+    console.log("signin");
+    const {email, password} = req.body
+    console.log("email: " +email);
+    const user =  await User.findOne({ email: email })
+    console.log(user);
+      
     if(user)
     {
-        if(bcrypt.compareSync(req.body.password, user.password))
+        if(bcrypt.compareSync(password, user.password))
         {
             res.send({_id : user._id, username: user.username, email: user.email, token: generateToken(user)})
+            console.log("signed in successfully");
             return;
         }
     }
@@ -22,8 +26,10 @@ userRouter.post("/signin", expressAsyncHandler(async (req, res) => {
 }));
 
 userRouter.post("/signup", expressAsyncHandler(async (req, res) => {
+
+    const {email , password} = req.body; //! validate email
     try{
-        const newUser = new User({username: req.body.username, email: req.body.email, password: bcrypt.hashSync(req.body.password,10)});
+        const newUser = new User({username: email.split('@')[0], email: email, password: bcrypt.hashSync(password,10)});
         const user = await newUser.save();
         res.send({_id: user._id, username: user.username, email: user.email, token: generateToken(user)});
     }
