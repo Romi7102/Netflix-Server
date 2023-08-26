@@ -38,7 +38,4 @@ userRouter.post("/signup", expressAsyncHandler(async (req, res) => {
     }
 }));
 
-userRouter.get("/", isAuth , async (req,res) => {
-    res.status(200).send({message: "Ok"})
-});
 
