@@ -80,7 +80,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/movie",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const content = await Content.aggregate([{ $match: { isSeries: false } } ,{ $sample: { size: 1 } }]);
     return res.status(200).send(content[0]);
@@ -89,7 +89,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/series",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const content = await Content.aggregate([{ $match: { isSeries: true } } ,{ $sample: { size: 1 } } ]);
     return res.status(200).send(content[0]);
@@ -109,7 +109,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/featured/movie",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const featuredContent = await FeaturedContent.find({type: "movie"})
       .populate("contentList")
@@ -119,7 +119,7 @@ contentRouter.get(
 );
 contentRouter.get(
   "/featured/series",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const featuredContent = await FeaturedContent.find({type: "series"})
       .populate("contentList")
