@@ -12,7 +12,7 @@ const PAGE_SIZE = 10;
 
 contentRouter.get(
   "/",
-    isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const content = await Content.find();
     res.send(content);
@@ -21,7 +21,7 @@ contentRouter.get(
 
 contentRouter.get(
   "/id/:id",
-    isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     //! no need to try catch thanks for express async handler
     const { id } = req.params;
@@ -35,24 +35,27 @@ contentRouter.get(
 
 contentRouter.get(
   "/search",
-  isAuth,
+  // isAuth,
   expressAsyncHandler(async (req, res) => {
-    console.log("search end point");
     const { query } = req;
     const pageSize = PAGE_SIZE;
     const page = query.page || 1;
     const searchQuery = query.query || "";
+    const genre = query.genre || "";
 
     const queryFilter = searchQuery
       ? { title: { $regex: searchQuery, $options: "i" } }
       : {};
+    const genreFilter = genre && genre !== "all" ? { genre } : {};
     const contents = await Content.find({
       ...queryFilter,
+      ...genreFilter,
     })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
     const countContent = await Content.countDocuments({
       ...queryFilter,
+      ...genreFilter,
     });
     console.log(countContent);
     res.send({
@@ -68,9 +71,10 @@ contentRouter.get(
   "/random",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    console.log(req.headers);
-    const content = await Content.aggregate([{ $sample: { size: 1 } }]);
-    return res.status(200).send(content[0]);
+    // const content = await Content.aggregate([{ $sample: { size: 1 } }]);
+    // return res.status(200).send(content[0]);
+    const content = await Content.findById("64ddc3a0fd9cd0860359a4d3");
+    return res.status(200).send(content);
   })
 );
 
@@ -78,7 +82,9 @@ contentRouter.get(
   "/featured",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const featuredContent = await FeaturedContent.find().populate('contentList').exec();
+    const featuredContent = await FeaturedContent.find()
+      .populate("contentList")
+      .exec();
     return res.status(200).send(featuredContent);
   })
 );
