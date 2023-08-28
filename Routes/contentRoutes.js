@@ -108,7 +108,7 @@ contentRouter.get(
 );
 
 contentRouter.get(
-  "/featured/movies",
+  "/featured/movie",
   // isAuth,
   expressAsyncHandler(async (req, res) => {
     const featuredContent = await FeaturedContent.find({type: "movie"})
