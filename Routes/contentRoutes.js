@@ -68,49 +68,37 @@ contentRouter.get(
 );
 
 contentRouter.get(
-  "/random",
+  "/random/:type",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    // const content = await Content.aggregate([{ $sample: { size: 1 } }]);
-    // return res.status(200).send(content[0]);
-    const content = await Content.findById("64ddc3a0fd9cd0860359a4d3");
-    return res.status(200).send(content);
+    const { type } = req.params;
+    if (type == "all") {
+      const content = await Content.aggregate([{ $sample: { size: 1 } }]);
+      return res.status(200).send(content[0]);
+    } else {
+      const content = await Content.aggregate([
+        { $match: { isSeries: type == "series" } },
+        { $sample: { size: 1 } },
+      ]);
+      return res.status(200).send(content[0]);
+    }
+
+    // const content = await Content.findById("64ddc3a0fd9cd0860359a4d3");
+    // return res.status(200).send(content);
   })
 );
 
-contentRouter.get(
-  "/movie",
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    const content = await Content.aggregate([
-      { $match: { isSeries: false } },
-      { $sample: { size: 1 } },
-    ]);
-    return res.status(200).send(content[0]);
-  })
-);
-
-contentRouter.get(
-  "/series",
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    const content = await Content.aggregate([
-      { $match: { isSeries: true } },
-      { $sample: { size: 1 } },
-    ]);
-    return res.status(200).send(content[0]);
-  })
-);
 
 contentRouter.get(
   "/featured/:type",
-  // isAuth,
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const { type } = req.params;
-    const featuredContent = await FeaturedContent.find(type == 'all' ? {} : {type: type})
+    const featuredContent = await FeaturedContent.find(
+      type == "all" ? {} : { type: type }
+    )
       .populate("contentList")
       .exec();
     return res.status(200).send(featuredContent);
   })
 );
-
