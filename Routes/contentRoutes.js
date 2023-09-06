@@ -96,12 +96,12 @@ contentRouter.get(
     const { type } = req.params;
     if (type == "all") {
 
-      //! for now only spiderman
-      const content = await Content.findById("64ddc3a0fd9cd0860359a4d5");
-      return res.status(200).send(content);
+      // //! for now only spiderman
+      // const content = await Content.findById("64ddc3a0fd9cd0860359a4d5");
+      // return res.status(200).send(content);
 
-      // const content = await Content.aggregate([{ $sample: { size: 1 } }]);
-      // return res.status(200).send(content[0]);
+      const content = await Content.aggregate([{ $sample: { size: 1 } }]);
+      return res.status(200).send(content[0]);
     } else {
       const content = await Content.aggregate([
         { $match: { isSeries: type == "series" } },
